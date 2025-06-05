@@ -33,7 +33,7 @@ async def forward_message_to_groups(client, message):
         if is_valid_group(dialog):
             group_id = dialog.id
             last_sent = last_sent_times.get(group_id, 0)
-            if now - last_sent >= 120:  # 2 minutes
+            if now - last_sent >= 3600:  # 60 minutes
                 try:
                     await client.forward_messages(group_id, message)
                     last_sent_times[group_id] = now
@@ -41,7 +41,7 @@ async def forward_message_to_groups(client, message):
                 except:
                     continue
 
-    if sent_count >= 5:
+    if sent_count >= 1:
         print(colored(f"✅ Message forwarded to {sent_count} groups", "green"))
 
 async def listen_for_admin_messages(client, admin_ids, session_name):
@@ -58,7 +58,7 @@ async def periodic_forwarder(client, session_name):
         msg = latest_message.get(session_name)
         if msg:
             await forward_message_to_groups(client, msg)
-        await asyncio.sleep(120)
+        await asyncio.sleep(3600)  # 60 minutes
 
 async def main():
     for account in accounts:
